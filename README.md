@@ -7,5 +7,6 @@ If you're here for [rinstagib.sp](https://github.com/jack-avery/rinstagib/blob/m
 ## Building
 
 * Run `make sm` (`make sm-win` if on Windows) to build SourceMod and MetaMod into `./build/_sm`.
+* Run `make all` (`make all-win` if on Windows) to build SourceMod, MetaMod, and set up configuration for all instances defined in `cfg` into `./build_instances`.
 
 Suggested configuration is in `cfg/all`.
