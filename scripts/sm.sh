@@ -44,7 +44,6 @@ rm ./build/*$SUFFIX
 cp -r -u ./sourcemod/* ./build/addons/sourcemod
 
 # move disabled plugins
-mkdir ./build/addons/sourcemod/scripting/disabled
 cat ./sourcemod/scripting/disabled.txt | while read line
 do
   mv ./build/addons/sourcemod/scripting/$line.sp ./build/addons/sourcemod/scripting/disabled
@@ -60,4 +59,4 @@ mv ./build/addons/sourcemod/scripting/compiled/* ./build/addons/sourcemod/plugin
 
 # move completed sourcemod into sm
 mkdir ./build/_sm
-mv ./build/* ./build/_sm
+mv ./build/* ./build/_sm || true
