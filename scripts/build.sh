@@ -33,3 +33,6 @@ mv ./build/addons/sourcemod/scripting/compiled/* ./build/addons/sourcemod/plugin
 
 # clean up
 rm ./build/*.tar.gz
+
+# move in current config
+cp -r ./tf/* ./build
