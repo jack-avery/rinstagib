@@ -1,3 +1,5 @@
+#!/bin/bash
+
 METAMOD=https://mms.alliedmods.net/mmsdrop/1.11/mmsource-1.11.0-git1148
 SOURCEMOD=https://sm.alliedmods.net/smdrop/1.11/sourcemod-1.11.0-git6934
 MMOUT=metamod
@@ -6,10 +8,12 @@ SMOUT=sourcemod
 if [[ "$1" = "win" ]]; then
   SUFFIX=-windows.zip
   COMPILE=./compile.exe
+  UNZIP=unzip
   dos2unix ./tf/addons/sourcemod/scripting/disabled.txt
 else
   SUFFIX=-linux.tar.gz
   COMPILE=./compile.sh
+  UNZIP=tar\ xvf
 fi
 
 METAMOD=$METAMOD$SUFFIX
@@ -24,13 +28,13 @@ mkdir build
 # download metamod
 curl -o ./build/$MMOUT $METAMOD
 cd ./build
-unzip $MMOUT
+$UNZIP $MMOUT
 cd ..
 
 # download sourcemod
 curl -o ./build/$SMOUT $SOURCEMOD
 cd ./build
-unzip $SMOUT
+$UNZIP $SMOUT
 cd ..
 
 # merge repo in
