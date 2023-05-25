@@ -1,0 +1,29 @@
+"Phrases"
+{
+	"TWR Command Usage"
+	{
+		"en"		"Usage: weaponrestrict <name>.  <name> can be \"none\" or \"\" to reset to stamdard."
+	}
+
+	"TWR Config Not Found"
+	{
+		"#format"	"{1:s}"
+		"en"		"Could not find configuration: {1}"
+	}
+
+	"TWR Standard"
+	{
+		"en"		"Standard"
+	}
+
+	"TWR Loaded Config"
+	{
+		"#format"	"{1:s}"
+		"en"		"Loaded weapon configuration: {1}"
+	}
+
+	"TWR Disabled"
+	{
+		"en"		"Plugin is currently disabled"
+	}
+}
