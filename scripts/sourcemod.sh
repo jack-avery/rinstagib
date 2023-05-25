@@ -2,6 +2,11 @@ METAMOD=https://mms.alliedmods.net/mmsdrop/1.11/mmsource-1.11.0-git1148-linux.ta
 SOURCEMOD=https://sm.alliedmods.net/smdrop/1.11/sourcemod-1.11.0-git6934-linux.tar.gz
 test -e build || mkdir build
 
+# download latest metamod
+curl -o ./build/metamod.tar.gz $METAMOD
+cd ./build
+tar xvf metamod.tar.gz
+
 # download latest sourcemod
 curl -o ./build/sourcemod.tar.gz $SOURCEMOD
 cd ./build
@@ -24,3 +29,6 @@ cd ./build/addons/sourcemod/scripting
 
 # move compiled plugins
 mv ./build/addons/sourcemod/scripting/compiled/* ./build/addons/sourcemod/plugins
+
+# clean up
+rm ./build/*.tar.gz
