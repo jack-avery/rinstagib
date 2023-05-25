@@ -1,6 +1,9 @@
 METAMOD=https://mms.alliedmods.net/mmsdrop/1.11/mmsource-1.11.0-git1148-linux.tar.gz
 SOURCEMOD=https://sm.alliedmods.net/smdrop/1.11/sourcemod-1.11.0-git6934-linux.tar.gz
-test -e build || mkdir build
+
+# clear old build
+test -e build || rm -r build
+mkdir build
 
 # download latest metamod
 curl -o ./build/metamod.tar.gz $METAMOD
