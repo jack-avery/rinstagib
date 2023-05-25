@@ -1,12 +1,12 @@
-.PHONY: all all-win build build-win
+.PHONY: all all-win sm sm-win
 
-all: build
+all: sm
 
-all-win: build-win
+all-win: sm-win
 
-build:
-	chmod +x ./scripts/build.sh
-	./scripts/build.sh
+sm:
+	chmod +x ./scripts/sm.sh
+	./scripts/sm.sh
 
-build-win:
-	./scripts/build.sh win
+sm-win:
+	./scripts/sm.sh win
