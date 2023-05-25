@@ -1,3 +1,8 @@
-addons/sourcemod/plugins
+# keep inventory private
+cfg/inventory.json
+
+# built sm/instance configs
 build
-secrets
+
+# secret...
+secret
