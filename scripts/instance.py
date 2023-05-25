@@ -1,4 +1,4 @@
-# Script to build configurations for all configured instances
+# Script to build all configured instances
 
 import json
 import os
@@ -10,7 +10,7 @@ if os.getcwd().endswith("scripts"):
 
 # try to make sure SM is built first?
 if not os.path.exists("build") or not os.path.exists("build/_sm"):
-    print("make sm first before running config.py")
+    print("make sm first before running instance.py")
 
 # remove old instances
 if os.path.exists("build/_instances"):

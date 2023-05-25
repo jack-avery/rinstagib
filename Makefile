@@ -12,4 +12,4 @@ sm-win:
 	./scripts/sm.sh win
 
 instances:
-	py ./scripts/config.py
+	py ./scripts/instance.py
