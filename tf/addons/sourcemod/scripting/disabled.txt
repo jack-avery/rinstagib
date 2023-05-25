@@ -1,0 +1,12 @@
+admin-sql-prefetch
+admin-sql-threaded
+curl_self_test
+discord_calladmin
+discord_sourcebans
+discord_sourcecomms
+nativevotes_votemanager_test
+nativevotes_votetest
+randomcycle
+soap_fwd_test
+soap_tournament
+sql-admin-manager
