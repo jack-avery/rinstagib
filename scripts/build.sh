@@ -60,3 +60,6 @@ rm ./build/*$SUFFIX
 
 # move in current config
 cp -r ./tf/* ./build
+
+# move in secrets config
+cp -r ./secrets/* ./build
