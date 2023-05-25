@@ -1,5 +1,6 @@
-Plugin sources and default configuration for RAS INSTAGIB gamemode
-https://www.youtube.com/watch?v=6GSMJ-zzzig
+Plugin sources and default configuration for RAS INSTAGIB gamemode ([trailer video](https://www.youtube.com/watch?v=6GSMJ-zzzig))
+
+If you're here for [rinstagib.sp](https://github.com/jack-avery/rinstagib/blob/main/tf/addons/sourcemod/scripting/rinstagib.sp)
 
 Used Plugins:
 * [SourceMod Base](https://www.sourcemod.net/downloads.php?branch=stable)
