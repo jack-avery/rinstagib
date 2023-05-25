@@ -1,8 +1,8 @@
 .PHONY: all all-win sm sm-win
 
-all: sm
+all: sm instances
 
-all-win: sm-win
+all-win: sm-win instances
 
 sm:
 	chmod +x ./scripts/sm.sh
@@ -10,3 +10,6 @@ sm:
 
 sm-win:
 	./scripts/sm.sh win
+
+instances:
+	py ./scripts/config.py
