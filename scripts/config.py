@@ -25,6 +25,10 @@ with open("cfg/inventory.json", "r") as inventory:
 # create instance configs
 for i_name, i_data in instances.items():
     os.mkdir(f"build/_instances/{i_name}")
+    os.mkdir(f"build/_instances/{i_name}/tf")
+
+    # copy sourcemod
+    shutil.copytree("build/_sm", f"build/_instances/{i_name}/tf", dirs_exist_ok=True)
 
     # copy common config
     shutil.copytree("cfg/all/", f"build/_instances/{i_name}/", dirs_exist_ok=True)
