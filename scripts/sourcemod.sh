@@ -21,3 +21,6 @@ done
 # compile
 cd ./build/addons/sourcemod/scripting
 ./compile.sh
+
+# move compiled plugins
+mv ./build/addons/sourcemod/scripting/compiled/* ./build/addons/sourcemod/plugins
