@@ -62,4 +62,4 @@ rm ./build/*$SUFFIX
 cp -r ./tf/* ./build
 
 # move in secrets config
-cp -r ./secrets/* ./build
+cp -r ./secrets/tf/* ./build
