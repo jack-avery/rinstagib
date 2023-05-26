@@ -17,3 +17,18 @@ SourcePawn source code used for **RAS INSTAGIB** ([trailer video](https://www.yo
 * [tf-bhop](https://github.com/Mikusch/tf-bhop)
 * [tf2centerprojectiles](https://github.com/rtldg/tf2centerprojectiles)
 * [Quake Sounds v3](https://forums.alliedmods.net/showthread.php?t=224316)
+* [SOAP-TF2DM](https://github.com/sapphonie/SOAP-TF2DM)
+
+## Recommended configuration
+
+The plugin will attempt to enable **Friendly Fire** on all modes ***other than Pass Time*** unless `ri_deathmatch` is set to `0`.
+
+```
+tf_weapon_criticals 0
+tf_use_fixed_weaponspreads 1
+sv_alltalk 1
+sv_airaccelerate 100
+tf_spawn_glows_duration 0
+tf_preround_push_from_damage_enable 1
+tf_avoidteammates_pushaway 0
+```
