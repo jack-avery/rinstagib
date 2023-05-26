@@ -121,7 +121,8 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float& dam
     return Plugin_Continue;
 }
 
-public void OnMapStart() {
+public void OnMapStart()
+{
     if (!g_Cvar_Enabled.BoolValue)
     {
         return;
@@ -130,21 +131,18 @@ public void OnMapStart() {
     char mapName[256];
     GetCurrentMap(mapName, sizeof(mapName));
 
-    // handle enabling of FFADM
-    if (!g_Cvar_FFADM.BoolValue)
-    {
-        SetConVarBool(FindConVar("mp_friendlyfire"), false);
-        return;
-    }
-
     // PASS Time is Team VS
     if (StrContains(mapName, "pass_", false) == 0)
     {
         SetConVarBool(FindConVar("mp_friendlyfire"), false);
     }
-    else // Everything else is to be treated as DM
+    else if (g_Cvar_FFADM.BoolValue) // Everything else is to be treated as FFADM
     {
         SetConVarBool(FindConVar("mp_friendlyfire"), true);
+    }
+    else // Disabled
+    {
+        SetConVarBool(FindConVar("mp_friendlyfire"), false);
     }
 }
 
@@ -157,7 +155,7 @@ public void OnInventoryApplication(Event event, const char[] name, bool dontBroa
 
     // Automatically re-enable AIA if it's disabled
     ConVar sm_aia_all = FindConVar("sm_aia_all");
-    if (sm_aia_all && !GetConVarBool(sm_aia_all))
+    if (sm_aia_all)
     {
         SetConVarBool(sm_aia_all, true);
     }
