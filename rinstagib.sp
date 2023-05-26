@@ -31,7 +31,8 @@ public Plugin myinfo =
     url = "https://discord.gg/V5Z29SXtsY"
 };
 
-public void OnPluginStart() {
+public void OnPluginStart()
+{
     g_Cvar_Enabled = CreateConVar("ri_enabled", "1", "Enable ras instagib mode.", _, true, 0.0, true, 1.0);
     g_Cvar_FFADM = CreateConVar("ri_deathmatch", "1", "Whether NON-PASSTIME gamemodes should be a Free-For-All Deathmatch.", _, true, 0.0, true, 1.0);
     g_Cvar_NoFalldamage = CreateConVar("ri_nofalldamage", "1", "Disable fall damage.", _, true, 0.0, true, 1.0);
@@ -45,7 +46,8 @@ public void OnPluginStart() {
     g_Cvar_Melee_Damage = CreateConVar("ri_melee_damage", "5", "Melee damage multiplier.", _, true, 0.0, true, 10.0);
 
     // apply hook to players already connected on reload
-    for (int client = 1; client <= MaxClients; client++) {
+    for (int client = 1; client <= MaxClients; client++)
+    {
         if (IsClientInGame(client)) {
             OnClientPutInServer(client);
         }
@@ -54,34 +56,41 @@ public void OnPluginStart() {
     HookEvent("post_inventory_application", OnInventoryApplication, EventHookMode_Post);
 }
 
-public void OnClientPutInServer(int client) {
+public void OnClientPutInServer(int client)
+{
 	SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage);
 }
 
-public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float& damage, int &damagetype, int &weapon, float damageForce[3], float damagePosition[3], int damagecustom) {
+public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float& damage, int &damagetype, int &weapon, float damageForce[3], float damagePosition[3], int damagecustom)
+{
     // remove fall damage
-	if(damagetype & DMG_FALL) {
-        if (!GetConVarBool(g_Cvar_NoFalldamage)) {
+	if(damagetype & DMG_FALL)
+    {
+        if (!GetConVarBool(g_Cvar_NoFalldamage))
+        {
             return Plugin_Continue;
         }
 
         // have kill barriers still kill
         // 450< fall damage in one fall shouldn't usually happen
-		if(damage > 450) {
+		if(damage > 450)
+        {
             return Plugin_Continue;
         }
         return Plugin_Handled;
 	}
     
     // quit early for people potentially only wanting falldamage removal
-    if (!GetConVarBool(g_Cvar_Enabled)) {
+    if (!GetConVarBool(g_Cvar_Enabled))
+    {
         return Plugin_Continue;
     }
 
     // apply very strict railgun damage
     char wepcls[128];
     GetEntityClassname(weapon, wepcls, sizeof(wepcls));
-    if(StrContains(wepcls, "tf_weapon_shotgun", false) == 0) {
+    if(StrContains(wepcls, "tf_weapon_shotgun", false) == 0)
+    {
         damage = g_Cvar_Rail_Damage.FloatValue;
 
         // measure distance & apply range multiplier
@@ -89,7 +98,8 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float& dam
         GetEntPropVector(victim, Prop_Send, "m_vecOrigin", pos_victim);
         float pos_inflictor[3];
         GetEntPropVector(inflictor, Prop_Send, "m_vecOrigin", pos_inflictor);
-        if(GetVectorDistance(pos_victim, pos_inflictor) > g_Cvar_Rail_Sniperange.FloatValue) {
+        if(GetVectorDistance(pos_victim, pos_inflictor) > g_Cvar_Rail_Sniperange.FloatValue)
+        {
             damage = damage * g_Cvar_Rail_Snipemult.FloatValue;
         }
 
@@ -110,7 +120,8 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float& dam
 }
 
 public void OnMapStart() {
-    if (!g_Cvar_Enabled.BoolValue) {
+    if (!g_Cvar_Enabled.BoolValue)
+    {
         return;
     }
 
@@ -118,29 +129,33 @@ public void OnMapStart() {
     GetCurrentMap(mapName, sizeof(mapName));
 
     // handle enabling of FFADM
-    if (!g_Cvar_FFADM.BoolValue) {
+    if (!g_Cvar_FFADM.BoolValue)
+    {
         SetConVarBool(FindConVar("mp_friendlyfire"), false);
         return;
     }
 
     // PASS Time is Team VS
-    if (StrContains(mapName, "pass_", false) == 0) {
+    if (StrContains(mapName, "pass_", false) == 0)
+    {
         SetConVarBool(FindConVar("mp_friendlyfire"), false);
     }
-    else {
-        // Everything else is to be treated as DM
+    else // Everything else is to be treated as DM
+    {
         SetConVarBool(FindConVar("mp_friendlyfire"), true);
     }
 }
 
-public void OnInventoryApplication(Event event, const char[] name, bool dontBroadcast) {
-    if (!g_Cvar_Enabled.BoolValue) {
+public void OnInventoryApplication(Event event, const char[] name, bool dontBroadcast)
+{
+    if (!g_Cvar_Enabled.BoolValue)
+    {
         return;
     }
 
     // Automatically re-enable AIA if it's disabled
     ConVar sm_aia_all = FindConVar("sm_aia_all");
-    if (sm_aia_all && GetConVarBool(sm_aia_all))
+    if (sm_aia_all && !GetConVarBool(sm_aia_all))
     {
         SetConVarBool(sm_aia_all, true);
     }
@@ -161,7 +176,8 @@ public void OnInventoryApplication(Event event, const char[] name, bool dontBroa
     TF2Attrib_SetByName(pWeapon, "rocketjump attackrate bonus", 1.0); // air strike
 
     // Make rocket jumping free
-    if (g_Cvar_Launcher_FreeRJ.BoolValue) {
+    if (g_Cvar_Launcher_FreeRJ.BoolValue)
+    {
         TF2Attrib_SetByName(pWeapon, "rocket jump damage reduction", 0.0);
     }
 
