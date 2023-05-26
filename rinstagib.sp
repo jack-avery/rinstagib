@@ -132,7 +132,7 @@ public void OnMapStart()
     GetCurrentMap(mapName, sizeof(mapName));
 
     // PASS Time is Team VS
-    if (StrContains(mapName, "pass_", false) == 0 && )
+    if (StrContains(mapName, "pass_", false) == 0)
     {
         SetConVarBool(FindConVar("mp_friendlyfire"), false);
     }
