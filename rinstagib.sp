@@ -27,7 +27,7 @@ public Plugin myinfo =
     name = "ras instagib",
     author = "raspy",
     description = "ras instagib gamemode.",
-    version = "1.4.4",
+    version = "1.4.5",
     url = "https://discord.gg/V5Z29SXtsY"
 };
 
