@@ -1,8 +1,15 @@
 {
     "local": {
-        "ip": "localhost"
-    },
-    "server2": {
-        "ip": "192.168.0.79"
+        "ip": "localhost",
+        "user": "tf2server",
+        "homedir": "/home/tf2server",
+        "app": "tf",
+        "appdir": "/home/tf2server/serverfiles",
+        "appid": 232250,
+        "port": 27015,
+        "maxplayers": 12,
+        "password": "",
+        "map": "pass_brickyard",
+        "region": 0
     }
 }
