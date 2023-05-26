@@ -58,13 +58,13 @@ public void OnPluginStart()
 
 public void OnClientPutInServer(int client)
 {
-	SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage);
+    SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage);
 }
 
 public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float& damage, int &damagetype, int &weapon, float damageForce[3], float damagePosition[3], int damagecustom)
 {
     // remove fall damage
-	if(damagetype & DMG_FALL)
+    if(damagetype & DMG_FALL)
     {
         if (!GetConVarBool(g_Cvar_NoFalldamage))
         {
@@ -73,12 +73,12 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float& dam
 
         // have kill barriers still kill
         // 450< fall damage in one fall shouldn't usually happen
-		if(damage > 450)
+        if(damage > 450)
         {
             return Plugin_Continue;
         }
         return Plugin_Handled;
-	}
+    }
     
     // quit early for people potentially only wanting falldamage removal
     if (!GetConVarBool(g_Cvar_Enabled))
@@ -116,7 +116,7 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float& dam
         return Plugin_Handled;
     }
 
-	return Plugin_Continue;
+    return Plugin_Continue;
 }
 
 public void OnMapStart() {
@@ -185,9 +185,9 @@ public void OnInventoryApplication(Event event, const char[] name, bool dontBroa
     // SECONDARY
 
     // Create weapon
-	Handle hWeapon = TF2Items_CreateItem(OVERRIDE_ALL | FORCE_GENERATION | PRESERVE_ATTRIBUTES);
-	TF2Items_SetClassname(hWeapon, "tf_weapon_shotgun_soldier");
-	TF2Items_SetItemIndex(hWeapon, 10);
+    Handle hWeapon = TF2Items_CreateItem(OVERRIDE_ALL | FORCE_GENERATION | PRESERVE_ATTRIBUTES);
+    TF2Items_SetClassname(hWeapon, "tf_weapon_shotgun_soldier");
+    TF2Items_SetItemIndex(hWeapon, 10);
     int iWeapon = TF2Items_GiveNamedItem(client, hWeapon);
     delete hWeapon;
 
@@ -202,8 +202,8 @@ public void OnInventoryApplication(Event event, const char[] name, bool dontBroa
     int specKs = GetRandomInt(2002, 2008);
     int profKs = GetRandomInt(1, 7);
     TF2Attrib_SetByName(iWeapon, "killstreak tier", 3.0);
-    TF2Attrib_SetByName(iWeapon, "killstreak effect", 		float(specKs));
-    TF2Attrib_SetByName(iWeapon, "killstreak idleeffect", 	float(profKs));
+    TF2Attrib_SetByName(iWeapon, "killstreak effect",         float(specKs));
+    TF2Attrib_SetByName(iWeapon, "killstreak idleeffect",     float(profKs));
 
     // Replace secondary with railgun
     TF2_RemoveWeaponSlot(client, TFWeaponSlot_Secondary);
