@@ -16,6 +16,7 @@ SourcePawn source code used for **RAS INSTAGIB** ([trailer video](https://www.yo
 * [tf2centerprojectiles](https://github.com/rtldg/tf2centerprojectiles)
 * [Quake Sounds v3](https://forums.alliedmods.net/showthread.php?t=224316)
 * [SOAP-TF2DM](https://github.com/sapphonie/SOAP-TF2DM)
+* [Unrestricted FOV](https://forums.alliedmods.net/showthread.php?p=1936180)
 * [Advanced Infinite Ammo](https://forums.alliedmods.net/showthread.php?t=190562)
 > The plugin will attempt to enable Advanced Infinite Ammo on each player spawn.
 
