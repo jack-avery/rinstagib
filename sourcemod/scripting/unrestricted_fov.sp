@@ -24,7 +24,6 @@ new Handle:cvarFOVMax;
 
 #define UPDATE_FILE		"unrestricted_fov.txt"
 #define CONVAR_PREFIX	"ufov"
-#include "mckayupdater.sp"
 
 public OnPluginStart() {
 	cookieFOV = RegClientCookie("unrestricted_fov", "Client Desired FOV", CookieAccess_Private);
