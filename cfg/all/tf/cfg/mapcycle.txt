@@ -2,7 +2,6 @@ cp_badlands
 cp_process_final
 cp_sunshine
 koth_sawmill
-koth_harvest
 pass_brickyard
 pass_timbertown
 pl_upward
