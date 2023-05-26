@@ -6,6 +6,8 @@ SourcePawn source code used for **RAS INSTAGIB** ([trailer video](https://www.yo
 
 * [tf2attributes](https://github.com/FlaminSarge/tf2attributes)
 * [tf2items](https://github.com/asherkin/TF2Items)
+* [Advanced Infinite Ammo](https://forums.alliedmods.net/showthread.php?t=190562)
+> The plugin will attempt to enable Advanced Infinite Ammo on player spawn.
 
 ## Recommended Plugins
 
@@ -13,6 +15,5 @@ SourcePawn source code used for **RAS INSTAGIB** ([trailer video](https://www.yo
 > This plugin is intended to be played with only the Soldier class available.
 
 * [tf-bhop](https://github.com/Mikusch/tf-bhop)
-* [Advanced Infinite Ammo](https://forums.alliedmods.net/showthread.php?t=190562)
 * [tf2centerprojectiles](https://github.com/rtldg/tf2centerprojectiles)
 * [Quake Sounds v3](https://forums.alliedmods.net/showthread.php?t=224316)
