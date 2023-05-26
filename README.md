@@ -6,3 +6,13 @@ SourcePawn source code used for **RAS INSTAGIB** ([trailer video](https://www.yo
 
 * [tf2attributes](https://github.com/FlaminSarge/tf2attributes)
 * [tf2items](https://github.com/asherkin/TF2Items)
+
+## Recommended Plugins
+
+### [Class Restrictions For Humans](https://forums.alliedmods.net/showthread.php?p=2518202)
+> This plugin is intended to be played with only the Soldier class available.
+
+* [tf-bhop](https://github.com/Mikusch/tf-bhop)
+* [Advanced Infinite Ammo](https://forums.alliedmods.net/showthread.php?t=190562)
+* [tf2centerprojectiles](https://github.com/rtldg/tf2centerprojectiles)
+* [Quake Sounds v3](https://forums.alliedmods.net/showthread.php?t=224316)
