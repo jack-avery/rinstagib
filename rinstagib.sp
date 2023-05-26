@@ -27,7 +27,7 @@ public Plugin myinfo =
     name = "ras instagib",
     author = "raspy",
     description = "ras instagib gamemode.",
-    version = "1.4.3",
+    version = "1.4.2",
     url = "https://discord.gg/V5Z29SXtsY"
 };
 
@@ -140,7 +140,8 @@ public void OnInventoryApplication(Event event, const char[] name, bool dontBroa
 
     // Automatically re-enable AIA if it's disabled
     ConVar sm_aia_all = FindConVar("sm_aia_all");
-    if (sm_aia_all && GetConVarBool(sm_aia_all)) {
+    if (sm_aia_all && GetConVarBool(sm_aia_all))
+    {
         SetConVarBool(sm_aia_all, true);
     }
 
