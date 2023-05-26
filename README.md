@@ -2,6 +2,8 @@
 
 SourcePawn source code used for **RAS INSTAGIB** ([trailer video](https://www.youtube.com/watch?v=6GSMJ-zzzig))
 
+Servers running this gamemode and general discussion available [in the Discord](https://discord.gg/V5Z29SXtsY)
+
 ## Dependencies
 
 * [tf2attributes](https://github.com/FlaminSarge/tf2attributes)
