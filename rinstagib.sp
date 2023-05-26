@@ -16,6 +16,7 @@ ConVar g_Cvar_NoFalldamage;
 ConVar g_Cvar_Launcher_Damage;
 ConVar g_Cvar_Launcher_Radius;
 ConVar g_Cvar_Launcher_FreeRJ;
+ConVar g_Cvar_Launcher_Dumb;
 ConVar g_Cvar_Rail_Damage;
 ConVar g_Cvar_Rail_Rateslow;
 ConVar g_Cvar_Rail_Sniperange;
@@ -39,6 +40,7 @@ public void OnPluginStart()
     g_Cvar_Launcher_Damage = CreateConVar("ri_launcher_damage", "1.8", "Rocket launcher damage multiplier.", _, true, 0.0, true, 10.0);
     g_Cvar_Launcher_Radius = CreateConVar("ri_launcher_radius", "0.1", "Rocket launcher blast radius percentage.", _, true, 0.0, true, 1.0);
     g_Cvar_Launcher_FreeRJ = CreateConVar("ri_launcher_freerj", "1.0", "Whether Rocket Jumping should cost no health.", _, true, 0.0, true, 1.0);
+    g_Cvar_Launcher_Dumb = CreateConVar("ri_launcher_dumb", "1.0", "Remove projectile speed/firerate boosts from applicable rocket launchers.", _, true, 0.0, true, 1.0);
     g_Cvar_Rail_Damage = CreateConVar("ri_rail_damage", "115", "Railgun base damage.", _, true, 0.0, true, 200.0);
     g_Cvar_Rail_Rateslow = CreateConVar("ri_rail_rateslow", "2", "Railgun fire rate penalty.", _, true, 1.0, true, 10.0);
     g_Cvar_Rail_Sniperange = CreateConVar("ri_rail_snipe_range", "1024", "Railgun range to modify damage.", _, true, 0.0, true, 5192.0);
@@ -172,8 +174,11 @@ public void OnInventoryApplication(Event event, const char[] name, bool dontBroa
     TF2Attrib_SetByName(pWeapon, "Blast radius decreased", g_Cvar_Launcher_Radius.FloatValue);
 
     // Remove unfair buffs from weapons
-    TF2Attrib_SetByName(pWeapon, "Projectile speed increased", 1.0); // direct hit/liblauncher
-    TF2Attrib_SetByName(pWeapon, "rocketjump attackrate bonus", 1.0); // air strike
+    if (g_Cvar_Launcher_Dumb.BoolValue)
+    {
+        TF2Attrib_SetByName(pWeapon, "Projectile speed increased", 1.0); // direct hit/liblauncher
+        TF2Attrib_SetByName(pWeapon, "rocketjump attackrate bonus", 1.0); // air strike
+    }
 
     // Make rocket jumping free
     if (g_Cvar_Launcher_FreeRJ.BoolValue)
