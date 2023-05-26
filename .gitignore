@@ -1,8 +1,0 @@
-# keep inventory private
-cfg/inventory.json
-
-# built sm/instance configs
-build
-
-# secret...
-secret

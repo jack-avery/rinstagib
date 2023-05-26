@@ -1,8 +1,0 @@
-cp_badlands
-cp_process_final
-cp_sunshine
-koth_sawmill
-pass_brickyard
-pass_timbertown
-pl_upward
-plr_hightower
