@@ -96,13 +96,16 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float& dam
         damage = g_Cvar_Rail_Damage.FloatValue;
 
         // measure distance & apply range multiplier
-        float pos_victim[3];
-        GetEntPropVector(victim, Prop_Send, "m_vecOrigin", pos_victim);
-        float pos_inflictor[3];
-        GetEntPropVector(inflictor, Prop_Send, "m_vecOrigin", pos_inflictor);
-        if(GetVectorDistance(pos_victim, pos_inflictor) > g_Cvar_Rail_Sniperange.FloatValue)
+        if (g_Cvar_Rail_Snipemult.FloatValue != 1.0)
         {
-            damage = damage * g_Cvar_Rail_Snipemult.FloatValue;
+            float pos_victim[3];
+            GetEntPropVector(victim, Prop_Send, "m_vecOrigin", pos_victim);
+            float pos_inflictor[3];
+            GetEntPropVector(inflictor, Prop_Send, "m_vecOrigin", pos_inflictor);
+            if(GetVectorDistance(pos_victim, pos_inflictor) > g_Cvar_Rail_Sniperange.FloatValue)
+            {
+                damage = damage * g_Cvar_Rail_Snipemult.FloatValue;
+            }
         }
 
         // deal damage
