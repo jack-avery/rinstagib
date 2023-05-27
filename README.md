@@ -4,6 +4,8 @@ SourcePawn source code used for **RAS INSTAGIB** ([trailer video](https://www.yo
 
 Servers running this gamemode and general discussion available [in the Discord](https://discord.gg/V5Z29SXtsY)
 
+If you want true INSTAGIB ACTION you can can configure [the convars](https://github.com/jack-avery/rinstagib/blob/main/rinstagib.sp#L37)
+
 ## Dependencies
 
 * [tf2attributes](https://github.com/FlaminSarge/tf2attributes)
@@ -31,7 +33,8 @@ The plugin will attempt to enable **Friendly Fire** on all modes ***other than P
 tf_weapon_criticals 0
 tf_use_fixed_weaponspreads 1
 sv_alltalk 1
-sv_airaccelerate 100
+sv_airaccelerate 150
+sv_gravity 600
 tf_spawn_glows_duration 0
 tf_preround_push_from_damage_enable 1
 tf_avoidteammates_pushaway 0
