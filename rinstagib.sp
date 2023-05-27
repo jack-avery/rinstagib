@@ -44,7 +44,7 @@ public void OnPluginStart()
     g_Cvar_Rail_Damage = CreateConVar("ri_rail_damage", "115", "Railgun base damage.", _, true, 0.0, true, 200.0);
     g_Cvar_Rail_Rateslow = CreateConVar("ri_rail_rateslow", "2", "Railgun fire rate penalty.", _, true, 1.0, true, 10.0);
     g_Cvar_Rail_Sniperange = CreateConVar("ri_rail_snipe_range", "1024", "Railgun range to modify damage.", _, true, 0.0, true, 5192.0);
-    g_Cvar_Rail_Snipemult = CreateConVar("ri_rail_snipe_mult", "2", "Railgun range multiplier.", _, true, 0.0, true, 200.0);
+    g_Cvar_Rail_Snipemult = CreateConVar("ri_rail_snipe_mult", "2", "Railgun range multiplier. Set to 1 to disable.", _, true, 0.0, true, 200.0);
     g_Cvar_Melee_Damage = CreateConVar("ri_melee_damage", "5", "Melee damage multiplier.", _, true, 0.0, true, 10.0);
 
     // apply hook to players already connected on reload
