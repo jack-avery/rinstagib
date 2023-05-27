@@ -51,7 +51,7 @@ public void OnPluginStart()
     g_Cvar_Rail_Speed_Floor = CreateConVar("ri_rail_speed_floor", "700", "Railgun speed bonus floor. Set to -1 to disable.", _, true, -1.0, true, 5192.0);
     g_Cvar_Rail_Speed_Horizontal = CreateConVar("ri_rail_speed_horizontal", "0", "Whether railgun speed bonus should only consider horizontal speed.", _, true, 0.0, true, 1.0);
     g_Cvar_Rail_Speed_Bonus = CreateConVar("ri_rail_speed_bonus", "12", "Extra railgun damage to deal for every 100 speed above ri_rail_speed_floor.", _, true, 0.0, true, 5192.0);
-    g_Cvar_Melee_Damage = CreateConVar("ri_melee_damage", "5", "Melee damage multiplier.", _, true, 0.0, true, 10.0);
+    g_Cvar_Melee_Damage = CreateConVar("ri_melee_damage", "4", "Melee damage multiplier.", _, true, 0.0, true, 10.0);
 
     // apply hook to players already connected on reload
     for (int client = 1; client <= MaxClients; client++)
