@@ -62,6 +62,8 @@ public void OnPluginStart()
     }
 
     HookEvent("post_inventory_application", OnInventoryApplication, EventHookMode_Post);
+
+    AutoExecConfig(true, "rinstagib");
 }
 
 public void OnClientPutInServer(int client)
