@@ -4,7 +4,7 @@ SourcePawn source code used for **RAS INSTAGIB** ([trailer video](https://www.yo
 
 Servers running this gamemode and general discussion available [in the Discord](https://discord.gg/V5Z29SXtsY)
 
-If you want true INSTAGIB ACTION you can can configure [the convars](https://github.com/jack-avery/rinstagib/blob/main/rinstagib.sp#L37)
+If you want true INSTAGIB ACTION you can use [the convars](https://github.com/jack-avery/rinstagib/blob/main/rinstagib.sp#L37) or modify `tf/cfg/rinstagib.cfg`
 
 ## Dependencies
 
