@@ -31,7 +31,7 @@ public Plugin myinfo =
     name = "ras instagib",
     author = "raspy",
     description = "ras instagib gamemode.",
-    version = "1.5.0",
+    version = "1.5.1",
     url = "https://discord.gg/V5Z29SXtsY"
 };
 
@@ -49,8 +49,8 @@ public void OnPluginStart()
     g_Cvar_Rail_Snipe_Range = CreateConVar("ri_rail_snipe_range", "1024", "Railgun range to modify damage.", _, true, 0.0, true, 5192.0);
     g_Cvar_Rail_Snipe_Mult = CreateConVar("ri_rail_snipe_mult", "2", "Railgun range multiplier. Set to 1 to disable.", _, true, 0.0, true, 200.0);
     g_Cvar_Rail_Speed_Floor = CreateConVar("ri_rail_speed_floor", "700", "Railgun speed bonus floor. Set to -1 to disable.", _, true, -1.0, true, 5192.0);
-    g_Cvar_Rail_Speed_Horizontal = CreateConVar("ri_rail_speed_horizontal", "0", "Whether railgun speed bonus should only consider horizontal speed.", _, true, 0.0, true 1.0);
-    g_Cvar_Rail_Speed_Bonus = CreateConVar("ri_rail_speed_bonus", "12", "Extra railgun damage to deal for every 100 speed above ri_rail_speed_floor.", _, true, 0, true, 5192.0);
+    g_Cvar_Rail_Speed_Horizontal = CreateConVar("ri_rail_speed_horizontal", "0", "Whether railgun speed bonus should only consider horizontal speed.", _, true, 0.0, true, 1.0);
+    g_Cvar_Rail_Speed_Bonus = CreateConVar("ri_rail_speed_bonus", "12", "Extra railgun damage to deal for every 100 speed above ri_rail_speed_floor.", _, true, 0.0, true, 5192.0);
     g_Cvar_Melee_Damage = CreateConVar("ri_melee_damage", "5", "Melee damage multiplier.", _, true, 0.0, true, 10.0);
 
     // apply hook to players already connected on reload
@@ -122,16 +122,16 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float& dam
             GetEntPropVector(inflictor, Prop_Data, "m_vecAbsVelocity", vel_inflictor);
 
             float speed;
-            speed = SquareRoot( Pow(vel_inflictor[0], 2) + Pow(vel_inflictor[1], 2) ) // horizontal
+            speed = SquareRoot( Pow(vel_inflictor[0], 2.0) + Pow(vel_inflictor[1], 2.0) ); // horizontal
             if (!g_Cvar_Rail_Speed_Horizontal.BoolValue)
             {
-                speed = SquareRoot( Pow(speed, 2) + Pow(vel_inflictor[2], 2) ) // total absolute
+                speed = SquareRoot( Pow(speed, 2.0) + Pow(vel_inflictor[2], 2.0) ); // total absolute
             }
 
-            speed = speed - g_Cvar_Rail_Speed_Floor.FloatValue
+            speed = speed - g_Cvar_Rail_Speed_Floor.FloatValue;
             if (speed > 0)
             {
-                damage = damage + ( g_Cvar_Rail_Speed_Bonus.FloatValue * (speed / 100) )
+                damage = damage + ( g_Cvar_Rail_Speed_Bonus.FloatValue * (speed / 100) );
             }
         }
 
