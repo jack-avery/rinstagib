@@ -18,14 +18,20 @@ If you want a server automatically set up with rInstagib for you, see [the Ansib
 ## Required Plugins
 #### Plugins that the rinstagib gamemode depends on for the intended experience
 
-* [Class Restrictions For Humans](https://forums.alliedmods.net/showthread.php?p=2518202)
-> This plugin is intended to be played with only the Soldier class available.
+* [Class Restrictions For Humans](https://forums.alliedmods.net/showthread.php?p=2518202)<br/>
+-- This gamemode is intended to be played with only the Soldier class available.
 
-* [Advanced Infinite Ammo](https://forums.alliedmods.net/showthread.php?t=190562)
-> The plugin will attempt to enable Advanced Infinite Ammo on each player spawn.
+* [Advanced Infinite Ammo](https://forums.alliedmods.net/showthread.php?t=190562)<br/>
+-- The plugin will attempt to enable Advanced Infinite Ammo on each player spawn.
 
-* [tf-bhop](https://github.com/Mikusch/tf-bhop)
-* [SOAP-TF2DM](https://github.com/sapphonie/SOAP-TF2DM)
+* [tf-bhop](https://github.com/Mikusch/tf-bhop)<br/>
+-- Automatic hops and easy maintenance of velocity speeds up gameplay.
+
+* [SOAP-TF2DM](https://github.com/sapphonie/SOAP-TF2DM)<br/>
+-- Instant respawn & respawn positions closer to the fight reduces downtime.
+
+* [ChillyDM](https://github.com/pepperkick/ChillyDM)<br/>
+-- Bolsters playability of Free-For-All DM in Team Fortress 2.
 
 ## Recommended Plugins
 #### While not required, these are nice to have
@@ -41,11 +47,12 @@ If you want a server automatically set up with rInstagib for you, see [the Ansib
 ```
 tf_weapon_criticals 0                   // No randomness
 tf_use_fixed_weaponspreads 1            // No randomness
-sv_alltalk 1                            // FFADM
+sv_alltalk 1                            // Allows comms in FFA DM
 sv_airaccelerate 150                    // High turn speed
 sv_gravity 700                          // Bit floaty
 sv_turbophysics 1                       // Causes Pass Time Jack jank if disabled
 tf_spawn_glows_duration 0               // No FFA walls
 tf_preround_push_from_damage_enable 1   // Jump in spawn for Pass Time
 tf_avoidteammates_pushaway 0            // Allies don't collide
+soap_teamspawnrandom⁠ 1                  // Use both sides' spawns for FFA DM
 ```
