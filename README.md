@@ -9,6 +9,8 @@ Servers running this gamemode and general discussion available [in the Discord](
 > If you want true INSTAGIB ACTION you can use [the convars](https://github.com/jack-avery/rinstagib/blob/main/rinstagib.sp#L37) or modify `tf/cfg/rinstagib.cfg`<br/>
 If you want a server automatically set up with rInstagib for you, see [the Ansible playbook](https://github.com/jack-avery/rinstagib-server)
 
+Enjoy the gamemode? [Buy me a coffee ☕](https://ko-fi.com/raspy)!
+
 ## Direct Dependencies
 #### Plugins that rinstagib.sp depends on to run
 
