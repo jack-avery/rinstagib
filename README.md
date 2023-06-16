@@ -41,6 +41,7 @@ Enjoy the gamemode? [Buy me a coffee ☕](https://ko-fi.com/raspy)!
 * [tf2centerprojectiles](https://github.com/rtldg/tf2centerprojectiles)
 * [Quake Sounds v3](https://forums.alliedmods.net/showthread.php?t=224316)
 * [Unrestricted FOV](https://forums.alliedmods.net/showthread.php?p=1936180)
+* [speedo](https://github.com/JoinedSenses/TF2-Speedometer)
 
 ## Recommended configuration
 
