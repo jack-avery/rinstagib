@@ -28,16 +28,16 @@ ConVar g_Cvar_Melee_Damage;
 
 public Plugin myinfo =
 {
-    name = "ras instagib",
+    name = "rinstagib",
     author = "raspy",
-    description = "ras instagib gamemode.",
+    description = "rinstagib gamemode.",
     version = "1.6.0",
     url = "https://discord.gg/V5Z29SXtsY"
 };
 
 public void OnPluginStart()
 {
-    g_Cvar_Enabled = CreateConVar("ri_enabled", "1", "Enable ras instagib mode.", _, true, 0.0, true, 1.0);
+    g_Cvar_Enabled = CreateConVar("ri_enabled", "1", "Enable rinstagib mode.", _, true, 0.0, true, 1.0);
     g_Cvar_Launcher_Damage = CreateConVar("ri_launcher_damage", "1.8", "Rocket launcher damage multiplier.", _, true, 0.0, true, 10.0);
     g_Cvar_Launcher_Radius = CreateConVar("ri_launcher_radius", "0.1", "Rocket launcher blast radius percentage.", _, true, 0.0, true, 1.0);
     g_Cvar_Launcher_FreeRJ = CreateConVar("ri_launcher_freerj", "1.0", "Whether Rocket Jumping should cost no health.", _, true, 0.0, true, 1.0);
