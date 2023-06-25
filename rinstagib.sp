@@ -11,16 +11,14 @@
 #include <sdkhooks>
 
 ConVar g_Cvar_Enabled;
-ConVar g_Cvar_FFADM;
-ConVar g_Cvar_NoFalldamage;
 ConVar g_Cvar_Launcher_Damage;
 ConVar g_Cvar_Launcher_Radius;
 ConVar g_Cvar_Launcher_FreeRJ;
 ConVar g_Cvar_Launcher_Dumb;
 ConVar g_Cvar_Rail_Damage;
 ConVar g_Cvar_Rail_Rateslow;
-ConVar g_Cvar_Rail_Snipe_Range;
-ConVar g_Cvar_Rail_Snipe_Mult;
+ConVar g_Cvar_Rail_Snipe_Floor;
+ConVar g_Cvar_Rail_Snipe_Bonus;
 ConVar g_Cvar_Rail_Speed_Floor;
 ConVar g_Cvar_Rail_Speed_Horizontal;
 ConVar g_Cvar_Rail_Speed_Bonus;
@@ -31,22 +29,22 @@ public Plugin myinfo =
     name = "rinstagib",
     author = "raspy",
     description = "rinstagib gamemode.",
-    version = "1.6.0",
-    url = "https://discord.gg/V5Z29SXtsY"
+    version = "1.7.0",
+    url = "https://jackavery.ca/tf2/#rinstagib"
 };
 
 public void OnPluginStart()
 {
-    g_Cvar_Enabled = CreateConVar("ri_enabled", "1", "Enable rinstagib mode.", _, true, 0.0, true, 1.0);
+    g_Cvar_Enabled = CreateConVar("ri_enabled", "1", "Enable ras instagib mode.", _, true, 0.0, true, 1.0);
     g_Cvar_Launcher_Damage = CreateConVar("ri_launcher_damage", "1.8", "Rocket launcher damage multiplier.", _, true, 0.0, true, 10.0);
     g_Cvar_Launcher_Radius = CreateConVar("ri_launcher_radius", "0.1", "Rocket launcher blast radius percentage.", _, true, 0.0, true, 1.0);
     g_Cvar_Launcher_FreeRJ = CreateConVar("ri_launcher_freerj", "1.0", "Whether Rocket Jumping should cost no health.", _, true, 0.0, true, 1.0);
     g_Cvar_Launcher_Dumb = CreateConVar("ri_launcher_dumb", "1.0", "Remove projectile speed/firerate boosts from applicable rocket launchers.", _, true, 0.0, true, 1.0);
     g_Cvar_Rail_Damage = CreateConVar("ri_rail_damage", "80", "Railgun base damage.", _, true, 0.0, true, 200.0);
     g_Cvar_Rail_Rateslow = CreateConVar("ri_rail_rateslow", "2", "Railgun fire rate penalty.", _, true, 1.0, true, 10.0);
-    g_Cvar_Rail_Snipe_Range = CreateConVar("ri_rail_snipe_range", "1024", "Railgun range to modify damage.", _, true, 0.0, true, 5192.0);
-    g_Cvar_Rail_Snipe_Mult = CreateConVar("ri_rail_snipe_mult", "3", "Railgun range multiplier. Set to 1 to disable.", _, true, 0.0, true, 200.0);
-    g_Cvar_Rail_Speed_Floor = CreateConVar("ri_rail_speed_floor", "300", "Railgun speed bonus floor. Set to -1 to disable.", _, true, -1.0, true, 5192.0);
+    g_Cvar_Rail_Snipe_Floor = CreateConVar("ri_rail_snipe_floor", "512", "Range at which railgun damage ramp-up begins.", _, true, 0.0, true, 5192.0);
+    g_Cvar_Rail_Snipe_Bonus = CreateConVar("ri_rail_snipe_bonus", "25", "Extra railgun damage to deal for every 100 distance above ri_rail_snipe_floor.", _, true, 0.0, true, 5192.0);
+    g_Cvar_Rail_Speed_Floor = CreateConVar("ri_rail_speed_floor", "300", "Railgun speed bonus floor. Set to -1 to disable.", _, true, 0.0, true, 5192.0);
     g_Cvar_Rail_Speed_Horizontal = CreateConVar("ri_rail_speed_horizontal", "1", "Whether railgun speed bonus should only consider horizontal speed.", _, true, 0.0, true, 1.0);
     g_Cvar_Rail_Speed_Bonus = CreateConVar("ri_rail_speed_bonus", "20", "Extra railgun damage to deal for every 100 speed above ri_rail_speed_floor.", _, true, 0.0, true, 5192.0);
     g_Cvar_Melee_Damage = CreateConVar("ri_melee_damage", "4", "Melee damage multiplier.", _, true, 0.0, true, 10.0);
@@ -96,19 +94,24 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float& dam
         damage = g_Cvar_Rail_Damage.FloatValue;
 
         // measure distance & apply range multiplier
-        if (g_Cvar_Rail_Snipe_Mult.FloatValue != 1.0)
+        if (g_Cvar_Rail_Snipe_Bonus.FloatValue <= 1.0)
         {
             float pos_victim[3];
             GetEntPropVector(victim, Prop_Send, "m_vecOrigin", pos_victim);
             float pos_inflictor[3];
             GetEntPropVector(inflictor, Prop_Send, "m_vecOrigin", pos_inflictor);
-            if(GetVectorDistance(pos_victim, pos_inflictor) > g_Cvar_Rail_Snipe_Range.FloatValue)
+
+            float distance = GetVectorDistance(pos_victim, pos_inflictor);
+            distance = distance - g_Cvar_Rail_Snipe_Floor.FloatValue;
+
+            if (distance > 0)
             {
-                damage = damage * g_Cvar_Rail_Snipe_Mult.FloatValue;
+                damage = damage + ( g_Cvar_Rail_Snipe_Bonus.FloatValue * (distance / 100) );
             }
         }
 
-        if (g_Cvar_Rail_Speed_Floor.FloatValue >= 0.0)
+        // measure speed & apply speed multiplier
+        if (g_Cvar_Rail_Speed_Bonus.FloatValue <= 0.0)
         {
             float vel_inflictor[3];
             GetEntPropVector(inflictor, Prop_Data, "m_vecAbsVelocity", vel_inflictor);
@@ -184,30 +187,28 @@ public void OnInventoryApplication(Event event, const char[] name, bool dontBroa
     ////
     // SECONDARY
 
-    // Create weapon
-    Handle hWeapon = TF2Items_CreateItem(OVERRIDE_ALL | FORCE_GENERATION | PRESERVE_ATTRIBUTES);
-    TF2Items_SetClassname(hWeapon, "tf_weapon_shotgun_soldier");
-    TF2Items_SetItemIndex(hWeapon, 10);
-    int iWeapon = TF2Items_GiveNamedItem(client, hWeapon);
-    delete hWeapon;
+    // Allow people to use their own shotguns
+    int sWeapon = GetPlayerWeaponSlot(client, TFWeaponSlot_Secondary);
+    char wepcls[128];
+    GetEntityClassname(sWeapon, wepcls, sizeof(wepcls));
+    if(StrContains(wepcls, "tf_weapon_shotgun", false) == 0) {
+        // Clear attributes and rebuild to enforce consistency
+        TF2Attrib_RemoveAll(sWeapon);
+        Railgunify(sWeapon);
+    } else {
+        // Create weapon
+        Handle hWeapon = TF2Items_CreateItem(OVERRIDE_ALL | FORCE_GENERATION | PRESERVE_ATTRIBUTES);
+        TF2Items_SetClassname(hWeapon, "tf_weapon_shotgun_soldier");
+        TF2Items_SetItemIndex(hWeapon, 10);
+        int iWeapon = TF2Items_GiveNamedItem(client, hWeapon);
+        delete hWeapon;
 
-    // Make railgun
-    TF2Attrib_SetByName(iWeapon, "sniper fires tracer", 1.0);
-    TF2Attrib_SetByName(iWeapon, "minicrits become crits", 1.0);
-    TF2Attrib_SetByName(iWeapon, "weapon spread bonus", 0.0);
-    TF2Attrib_SetByName(iWeapon, "projectile penetration", 1.0);
-    TF2Attrib_SetByName(iWeapon, "fire rate penalty", g_Cvar_Rail_Rateslow.FloatValue);
+        Railgunify(iWeapon);
 
-    // Apply random killstreak
-    int specKs = GetRandomInt(2002, 2008);
-    int profKs = GetRandomInt(1, 7);
-    TF2Attrib_SetByName(iWeapon, "killstreak tier", 3.0);
-    TF2Attrib_SetByName(iWeapon, "killstreak effect",         float(specKs));
-    TF2Attrib_SetByName(iWeapon, "killstreak idleeffect",     float(profKs));
-
-    // Replace secondary with railgun
-    TF2_RemoveWeaponSlot(client, TFWeaponSlot_Secondary);
-    EquipPlayerWeapon(client, iWeapon);
+        // Replace secondary with railgun
+        TF2_RemoveWeaponSlot(client, TFWeaponSlot_Secondary);
+        EquipPlayerWeapon(client, iWeapon);
+    }
 
     ////
     // MELEE
@@ -215,4 +216,14 @@ public void OnInventoryApplication(Event event, const char[] name, bool dontBroa
     // Make melee one-shot always
     int mWeapon = GetPlayerWeaponSlot(client, TFWeaponSlot_Melee);
     TF2Attrib_SetByName(mWeapon, "damage bonus", g_Cvar_Melee_Damage.FloatValue);
+    TF2Attrib_SetByName(mWeapon, "restore health on kill", 0.0);
+}
+
+void Railgunify(int weapon) {
+    // Make railgun
+    TF2Attrib_SetByName(weapon, "sniper fires tracer", 1.0);
+    TF2Attrib_SetByName(weapon, "minicrits become crits", 1.0);
+    TF2Attrib_SetByName(weapon, "weapon spread bonus", 0.0);
+    TF2Attrib_SetByName(weapon, "projectile penetration", 1.0);
+    TF2Attrib_SetByName(weapon, "fire rate penalty", g_Cvar_Rail_Rateslow.FloatValue);
 }
