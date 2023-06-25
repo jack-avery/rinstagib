@@ -29,7 +29,7 @@ public Plugin myinfo =
     name = "rinstagib",
     author = "raspy",
     description = "rinstagib gamemode.",
-    version = "1.7.0",
+    version = "1.7.1",
     url = "https://jackavery.ca/tf2/#rinstagib"
 };
 
@@ -94,7 +94,7 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float& dam
         damage = g_Cvar_Rail_Damage.FloatValue;
 
         // measure distance & apply range multiplier
-        if (g_Cvar_Rail_Snipe_Bonus.FloatValue <= 1.0)
+        if (g_Cvar_Rail_Snipe_Bonus.FloatValue > 0.0)
         {
             float pos_victim[3];
             GetEntPropVector(victim, Prop_Send, "m_vecOrigin", pos_victim);
@@ -111,7 +111,7 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float& dam
         }
 
         // measure speed & apply speed multiplier
-        if (g_Cvar_Rail_Speed_Bonus.FloatValue <= 0.0)
+        if (g_Cvar_Rail_Speed_Bonus.FloatValue > 0.0)
         {
             float vel_inflictor[3];
             GetEntPropVector(inflictor, Prop_Data, "m_vecAbsVelocity", vel_inflictor);
