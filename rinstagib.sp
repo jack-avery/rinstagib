@@ -29,7 +29,7 @@ public Plugin myinfo =
     name = "rinstagib",
     author = "raspy",
     description = "rinstagib gamemode.",
-    version = "1.7.1",
+    version = "1.7.2",
     url = "https://jackavery.ca/tf2/#rinstagib"
 };
 
@@ -84,6 +84,10 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float& dam
             return Plugin_Continue;
         }
         return Plugin_Handled;
+    }
+
+    if (weapon == -1) {
+        return Plugin_Continue;
     }
 
     // apply very strict railgun damage
@@ -192,8 +196,10 @@ public void OnInventoryApplication(Event event, const char[] name, bool dontBroa
     char wepcls[128];
     GetEntityClassname(sWeapon, wepcls, sizeof(wepcls));
     if(StrContains(wepcls, "tf_weapon_shotgun", false) == 0) {
-        // Clear attributes and rebuild to enforce consistency
-        TF2Attrib_RemoveAll(sWeapon);
+        // remove bonuses on Panic Attack/Reserve Shooter
+        // setting this to 0 or 1 makes it 100% faster, 0.99 makes it 1% faster, good enough???
+        TF2Attrib_SetByName(sWeapon, "single wep deploy time decreased", 0.99);
+        TF2Attrib_SetByName(sWeapon, "mod mini-crit airborne", 0.0);
         Railgunify(sWeapon);
     } else {
         // Create weapon
