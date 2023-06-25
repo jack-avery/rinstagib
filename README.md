@@ -51,6 +51,7 @@ tf_weapon_criticals 0        // No randomness
 tf_use_fixed_weaponspreads 1 // No randomness
 sv_airaccelerate 150         // High turn speed
 sv_gravity 700               // A little floatiness is nice
+sm_aia_extrastuff 0          // The Beggars is weird with AIA ExtraStuff
 
 // For Free-For-All:
 tf_spawn_glows_duration 0    // No FFA respawn walls
