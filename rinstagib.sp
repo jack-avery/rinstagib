@@ -29,7 +29,7 @@ public Plugin myinfo =
     name = "rinstagib",
     author = "raspy",
     description = "rinstagib gamemode.",
-    version = "1.7.2",
+    version = "1.7.3",
     url = "https://jackavery.ca/tf2/#rinstagib"
 };
 
@@ -193,16 +193,36 @@ public void OnInventoryApplication(Event event, const char[] name, bool dontBroa
 
     // Allow people to use their own shotguns
     int sWeapon = GetPlayerWeaponSlot(client, TFWeaponSlot_Secondary);
-    char wepcls[128];
-    GetEntityClassname(sWeapon, wepcls, sizeof(wepcls));
-    if(StrContains(wepcls, "tf_weapon_shotgun", false) == 0) {
+
+    bool isValidShotgun = false;
+    // If they have an item in TFWeaponSlot_Secondary, ensure it's a shotgun
+    if (sWeapon != -1)
+    {
+        char wepcls[128];
+        GetEntityClassname(sWeapon, wepcls, sizeof(wepcls));
+        isValidShotgun = (StrContains(wepcls, "tf_weapon_shotgun", false) == 0);
+    } 
+    else // It's probably Gunboats/Mantreads
+    {
+        int entity = -1;
+        while((entity = FindEntityByClassname(entity, "tf_wearable")) != INVALID_ENT_REFERENCE)
+        {   // Remove Mantreads as it's not intended to be used
+            if(GetEntProp(entity, Prop_Send, "m_iItemDefinitionIndex") == 444)
+            {
+                AcceptEntityInput(entity, "Kill");
+                break;
+            }
+        }
+    }
+
+    if(isValidShotgun) {
         // remove bonuses on Panic Attack/Reserve Shooter
         // setting this to 0 or 1 makes it 100% faster, 0.99 makes it 1% faster, good enough???
         TF2Attrib_SetByName(sWeapon, "single wep deploy time decreased", 0.99);
         TF2Attrib_SetByName(sWeapon, "mod mini-crit airborne", 0.0);
         Railgunify(sWeapon);
     } else {
-        // Create weapon
+        // Create a new shotgun and railgunify it
         Handle hWeapon = TF2Items_CreateItem(OVERRIDE_ALL | FORCE_GENERATION | PRESERVE_ATTRIBUTES);
         TF2Items_SetClassname(hWeapon, "tf_weapon_shotgun_soldier");
         TF2Items_SetItemIndex(hWeapon, 10);
@@ -211,7 +231,7 @@ public void OnInventoryApplication(Event event, const char[] name, bool dontBroa
 
         Railgunify(iWeapon);
 
-        // Replace secondary with railgun
+        // Replace it with railgun
         TF2_RemoveWeaponSlot(client, TFWeaponSlot_Secondary);
         EquipPlayerWeapon(client, iWeapon);
     }
