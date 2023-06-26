@@ -14,7 +14,9 @@ ConVar g_Cvar_Enabled;
 ConVar g_Cvar_Launcher_Damage;
 ConVar g_Cvar_Launcher_Radius;
 ConVar g_Cvar_Launcher_FreeRJ;
-ConVar g_Cvar_Launcher_Dumb;
+ConVar g_Cvar_Launcher_Consistent;
+ConVar g_Cvar_Launcher_ProjSpeed;
+ConVar g_Cvar_Launcher_BazookaDeviation;
 ConVar g_Cvar_Rail_Damage;
 ConVar g_Cvar_Rail_Rateslow;
 ConVar g_Cvar_Rail_Snipe_Floor;
@@ -29,7 +31,7 @@ public Plugin myinfo =
     name = "rinstagib",
     author = "raspy",
     description = "rinstagib gamemode.",
-    version = "1.7.3",
+    version = "1.7.4",
     url = "https://jackavery.ca/tf2/#rinstagib"
 };
 
@@ -37,17 +39,19 @@ public void OnPluginStart()
 {
     g_Cvar_Enabled = CreateConVar("ri_enabled", "1", "Enable ras instagib mode.", _, true, 0.0, true, 1.0);
     g_Cvar_Launcher_Damage = CreateConVar("ri_launcher_damage", "1.8", "Rocket launcher damage multiplier.", _, true, 0.0, true, 10.0);
-    g_Cvar_Launcher_Radius = CreateConVar("ri_launcher_radius", "0.1", "Rocket launcher blast radius percentage.", _, true, 0.0, true, 1.0);
+    g_Cvar_Launcher_Radius = CreateConVar("ri_launcher_radius", "0.1", "Rocket launcher blast radius multiplier.", _, true, 0.0, true, 1.0);
     g_Cvar_Launcher_FreeRJ = CreateConVar("ri_launcher_freerj", "1.0", "Whether Rocket Jumping should cost no health.", _, true, 0.0, true, 1.0);
-    g_Cvar_Launcher_Dumb = CreateConVar("ri_launcher_dumb", "1.0", "Remove projectile speed/firerate boosts from applicable rocket launchers.", _, true, 0.0, true, 1.0);
+    g_Cvar_Launcher_Consistent = CreateConVar("ri_launcher_consistent", "1.0", "Whether all rocket launchers (except Beggars) should act the same.", _, true, 0.0, true, 1.0);
+    g_Cvar_Launcher_ProjSpeed = CreateConVar("ri_launcher_projspeed", "1.0", "Projectile speed multiplier for all launchers if ri_launcher_consistent is 1.", _, true, 0.0, true, 3.0);
+    g_Cvar_Launcher_BazookaDeviation = CreateConVar("ri_launcher_bazooka_nodeviation", "1.0", "Remove projectile deviation from the Beggars Bazooka.", _, true, 0.0, true, 1.0);
     g_Cvar_Rail_Damage = CreateConVar("ri_rail_damage", "80", "Railgun base damage.", _, true, 0.0, true, 200.0);
-    g_Cvar_Rail_Rateslow = CreateConVar("ri_rail_rateslow", "2", "Railgun fire rate penalty.", _, true, 1.0, true, 10.0);
-    g_Cvar_Rail_Snipe_Floor = CreateConVar("ri_rail_snipe_floor", "512", "Range at which railgun damage ramp-up begins.", _, true, 0.0, true, 5192.0);
-    g_Cvar_Rail_Snipe_Bonus = CreateConVar("ri_rail_snipe_bonus", "25", "Extra railgun damage to deal for every 100 distance above ri_rail_snipe_floor.", _, true, 0.0, true, 5192.0);
-    g_Cvar_Rail_Speed_Floor = CreateConVar("ri_rail_speed_floor", "300", "Railgun speed bonus floor. Set to -1 to disable.", _, true, 0.0, true, 5192.0);
+    g_Cvar_Rail_Rateslow = CreateConVar("ri_rail_rateslow", "2", "Railgun fire rate slow. 1 = Normal shotgun speed.", _, true, 1.0, true, 10.0);
+    g_Cvar_Rail_Snipe_Floor = CreateConVar("ri_rail_snipe_floor", "512", "Range at which railgun damage ramp-up begins.", _, true, 0.0);
+    g_Cvar_Rail_Snipe_Bonus = CreateConVar("ri_rail_snipe_bonus", "25", "Amount to add to railgun damage for every 100 distance above ri_rail_snipe_floor.", _);
+    g_Cvar_Rail_Speed_Floor = CreateConVar("ri_rail_speed_floor", "300", "Railgun speed bonus floor.", _, true, 0.0);
     g_Cvar_Rail_Speed_Horizontal = CreateConVar("ri_rail_speed_horizontal", "1", "Whether railgun speed bonus should only consider horizontal speed.", _, true, 0.0, true, 1.0);
-    g_Cvar_Rail_Speed_Bonus = CreateConVar("ri_rail_speed_bonus", "20", "Extra railgun damage to deal for every 100 speed above ri_rail_speed_floor.", _, true, 0.0, true, 5192.0);
-    g_Cvar_Melee_Damage = CreateConVar("ri_melee_damage", "4", "Melee damage multiplier.", _, true, 0.0, true, 10.0);
+    g_Cvar_Rail_Speed_Bonus = CreateConVar("ri_rail_speed_bonus", "20", "Amount to add to railgun damage for every 100 speed above ri_rail_speed_floor.", _);
+    g_Cvar_Melee_Damage = CreateConVar("ri_melee_damage", "4", "Melee damage multiplier.", _, true, 1.0, true, 10.0);
 
     // apply hook to players already connected on reload
     for (int client = 1; client <= MaxClients; client++)
@@ -175,10 +179,15 @@ public void OnInventoryApplication(Event event, const char[] name, bool dontBroa
     TF2Attrib_SetByName(pWeapon, "mod mini-crit airborne", 1.0);
     TF2Attrib_SetByName(pWeapon, "Blast radius decreased", g_Cvar_Launcher_Radius.FloatValue);
 
-    // Remove unfair buffs from weapons
-    if (g_Cvar_Launcher_Dumb.BoolValue)
+    // Remove deviation from Beggars
+    if (g_Cvar_Launcher_BazookaDeviation.BoolValue) {
+        TF2Attrib_SetByName(pWeapon, "projectile spread angle penalty", 0.0);
+    }
+
+    // Make all non-beggars rocket launchers consistent (else DH/AirStrike becomes S+)
+    if (g_Cvar_Launcher_Consistent.BoolValue)
     {
-        TF2Attrib_SetByName(pWeapon, "Projectile speed increased", 1.0); // direct hit/liblauncher
+        TF2Attrib_SetByName(pWeapon, "Projectile speed increased", g_Cvar_Launcher_ProjSpeed.FloatValue); // direct hit/liblauncher
         TF2Attrib_SetByName(pWeapon, "rocketjump attackrate bonus", 1.0); // air strike
     }
 
