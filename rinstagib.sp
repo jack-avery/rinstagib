@@ -2,6 +2,7 @@
 #pragma tabsize 4
 #pragma newdecls required
 
+#include <smlib>
 #include <sourcemod>
 #include <tf2attributes>
 #include <tf2>
@@ -31,7 +32,7 @@ public Plugin myinfo =
     name = "rinstagib",
     author = "raspy",
     description = "rinstagib gamemode.",
-    version = "1.7.4",
+    version = "1.8.0",
     url = "https://jackavery.ca/tf2/#rinstagib"
 };
 
@@ -62,6 +63,7 @@ public void OnPluginStart()
     }
 
     HookEvent("post_inventory_application", OnInventoryApplication, EventHookMode_Post);
+    HookEvent("player_death", OnPlayerDeath);
 
     AutoExecConfig(true, "rinstagib");
 }
@@ -138,17 +140,85 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float& dam
             }
         }
 
+        // Railgun damage instances >= 200 (instakill) should instagib
+        // this flag is used in player_death to actually gib
+        int damage_type = DMG_BULLET;
+        if (damage >= 200) {
+            damage_type += DMG_ALWAYSGIB;
+        }
+
         // deal damage
         SDKHooks_TakeDamage(victim,
                         attacker,
                         inflictor,
                         damage,
-                        DMG_ALWAYSGIB,
+                        damage_type,
                         weapon,
                         damageForce,
                         damagePosition,
                         true);
         return Plugin_Handled;
+    }
+
+    return Plugin_Continue;
+}
+
+public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast)
+{
+    if (!g_Cvar_Enabled.BoolValue)
+    {
+        return;
+    }
+
+    // mostly borrowed code from:
+    // https://forums.alliedmods.net/showthread.php?p=2633926 by Nanochip
+    // https://forums.alliedmods.net/showthread.php?t=81874 by strontiumdog/DiscoBBQ
+    int damage_type = event.GetInt("damagebits");
+    if (damage_type & DMG_ALWAYSGIB) {
+        int client = GetClientOfUserId(event.GetInt("userid"));
+        float origin[3];
+        GetClientAbsOrigin(client, origin);
+
+        int ragdoll = CreateEntityByName("tf_ragdoll");
+        int team = GetClientTeam(client);
+	    int class = view_as<int>(TF2_GetPlayerClass(client));
+
+        SetEntPropVector(ragdoll, Prop_Send, "m_vecRagdollOrigin", origin); 
+        SetEntPropEnt(ragdoll, Prop_Send, "m_hPlayer", client);
+        SetEntPropVector(ragdoll, Prop_Send, "m_vecForce", NULL_VECTOR);
+        SetEntPropVector(ragdoll, Prop_Send, "m_vecRagdollVelocity", NULL_VECTOR);
+        SetEntProp(ragdoll, Prop_Send, "m_bGib", 1);
+        SetEntProp(ragdoll, Prop_Send, "m_iTeam", team);
+        SetEntProp(ragdoll, Prop_Send, "m_iClass", class);
+
+        DispatchSpawn(ragdoll);
+
+        CreateTimer(0.1, RemoveBody, client);
+        CreateTimer(15.0, RemoveGibs, ragdoll);
+    }
+}
+
+public Action RemoveBody(Handle timer, any client)
+{
+    int ragdoll = GetEntPropEnt(client, Prop_Send, "m_hRagdoll");
+    if(IsValidEdict(ragdoll)) {
+        AcceptEntityInput(ragdoll, "kill");
+    }
+    return Plugin_Continue;
+}
+
+public Action RemoveGibs(Handle timer, any ent)
+{
+    if(IsValidEntity(ent))
+    {
+        char classname[64];
+
+        GetEdictClassname(ent, classname, sizeof(classname));
+
+        if(StrEqual(classname, "tf_ragdoll", false))
+        {
+            AcceptEntityInput(ent, "kill");
+        }
     }
 
     return Plugin_Continue;
@@ -176,6 +246,7 @@ public void OnInventoryApplication(Event event, const char[] name, bool dontBroa
     // Make airshots one-shot and remove blast radius
     int pWeapon = GetPlayerWeaponSlot(client, TFWeaponSlot_Primary);
     TF2Attrib_SetByName(pWeapon, "damage bonus", g_Cvar_Launcher_Damage.FloatValue);
+    TF2Attrib_SetByName(pWeapon, "damage penalty", 1.0);
     TF2Attrib_SetByName(pWeapon, "mod mini-crit airborne", 1.0);
     TF2Attrib_SetByName(pWeapon, "Blast radius decreased", g_Cvar_Launcher_Radius.FloatValue);
 
