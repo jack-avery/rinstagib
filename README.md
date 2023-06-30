@@ -15,7 +15,9 @@ Enjoy the gamemode? [Buy me a coffee ☕](https://ko-fi.com/raspy)!
 #### Plugins that rinstagib.sp depends on to run
 
 * [tf2attributes](https://github.com/FlaminSarge/tf2attributes)
-* [tf2items](https://github.com/asherkin/TF2Items)
+* [tf2items.inc](https://github.com/asherkin/TF2Items/blob/master/pawn/tf2items.inc)
+* [morecolors.inc](https://forums.alliedmods.net/showthread.php?t=185016)
+
 
 ## Required Plugins
 #### Plugins that the rinstagib gamemode depends on for the intended experience

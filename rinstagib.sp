@@ -10,8 +10,10 @@
 #include <tf2items>
 #include <sdktools>
 #include <sdkhooks>
+#include <morecolors>
 
 ConVar g_Cvar_Enabled;
+ConVar g_Cvar_Leaderboard;
 ConVar g_Cvar_Launcher_Damage;
 ConVar g_Cvar_Launcher_Radius;
 ConVar g_Cvar_Launcher_FreeRJ;
@@ -19,6 +21,7 @@ ConVar g_Cvar_Launcher_Consistent;
 ConVar g_Cvar_Launcher_ProjSpeed;
 ConVar g_Cvar_Launcher_BazookaDeviation;
 ConVar g_Cvar_Rail_Damage;
+ConVar g_Cvar_Rail_GibDamage;
 ConVar g_Cvar_Rail_Rateslow;
 ConVar g_Cvar_Rail_Snipe_Floor;
 ConVar g_Cvar_Rail_Snipe_Bonus;
@@ -27,25 +30,27 @@ ConVar g_Cvar_Rail_Speed_Horizontal;
 ConVar g_Cvar_Rail_Speed_Bonus;
 ConVar g_Cvar_Melee_Damage;
 
-public Plugin myinfo =
-{
+public Plugin myinfo = {
     name = "rinstagib",
     author = "raspy",
     description = "rinstagib gamemode.",
-    version = "1.8.0",
+    version = "1.9.0",
     url = "https://jackavery.ca/tf2/#rinstagib"
 };
 
-public void OnPluginStart()
-{
-    g_Cvar_Enabled = CreateConVar("ri_enabled", "1", "Enable ras instagib mode.", _, true, 0.0, true, 1.0);
+float g_fTopDamage[MAXPLAYERS + 1];
+
+public void OnPluginStart() {
+    g_Cvar_Enabled = CreateConVar("ri_enabled", "1", "Enable rinstagib mode.", _, true, 0.0, true, 1.0);
+    g_Cvar_Leaderboard = CreateConVar("ri_leaderboard", "1", "Enable the rinstagib damage leaderboard and announcements.", _, true, 0.0, true, 1.0);
     g_Cvar_Launcher_Damage = CreateConVar("ri_launcher_damage", "1.8", "Rocket launcher damage multiplier.", _, true, 0.0, true, 10.0);
     g_Cvar_Launcher_Radius = CreateConVar("ri_launcher_radius", "0.1", "Rocket launcher blast radius multiplier.", _, true, 0.0, true, 1.0);
     g_Cvar_Launcher_FreeRJ = CreateConVar("ri_launcher_freerj", "1.0", "Whether Rocket Jumping should cost no health.", _, true, 0.0, true, 1.0);
     g_Cvar_Launcher_Consistent = CreateConVar("ri_launcher_consistent", "1.0", "Whether all rocket launchers (except Beggars) should act the same.", _, true, 0.0, true, 1.0);
     g_Cvar_Launcher_ProjSpeed = CreateConVar("ri_launcher_projspeed", "1.0", "Projectile speed multiplier for all launchers if ri_launcher_consistent is 1.", _, true, 0.0, true, 3.0);
     g_Cvar_Launcher_BazookaDeviation = CreateConVar("ri_launcher_bazooka_nodeviation", "1.0", "Remove projectile deviation from the Beggars Bazooka.", _, true, 0.0, true, 1.0);
-    g_Cvar_Rail_Damage = CreateConVar("ri_rail_damage", "80", "Railgun base damage.", _, true, 0.0, true, 200.0);
+    g_Cvar_Rail_Damage = CreateConVar("ri_rail_damage", "80", "Railgun base damage.", _, true, 0.0);
+    g_Cvar_Rail_GibDamage = CreateConVar("ri_rail_gibdamage", "200", "Railgun shots dealing more than this amount will gib the target. Set to 0 to disable.", _, true, 0.0, true, 200.0);
     g_Cvar_Rail_Rateslow = CreateConVar("ri_rail_rateslow", "2", "Railgun fire rate slow. 1 = Normal shotgun speed.", _, true, 1.0, true, 10.0);
     g_Cvar_Rail_Snipe_Floor = CreateConVar("ri_rail_snipe_floor", "512", "Range at which railgun damage ramp-up begins.", _, true, 0.0);
     g_Cvar_Rail_Snipe_Bonus = CreateConVar("ri_rail_snipe_bonus", "25", "Amount to add to railgun damage for every 100 distance above ri_rail_snipe_floor.", _);
@@ -55,8 +60,7 @@ public void OnPluginStart()
     g_Cvar_Melee_Damage = CreateConVar("ri_melee_damage", "4", "Melee damage multiplier.", _, true, 1.0, true, 10.0);
 
     // apply hook to players already connected on reload
-    for (int client = 1; client <= MaxClients; client++)
-    {
+    for (int client = 1; client <= MaxClients; client++) {
         if (IsClientInGame(client)) {
             OnClientPutInServer(client);
         }
@@ -73,20 +77,25 @@ public void OnClientPutInServer(int client)
     SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage);
 }
 
+public void OnClientAuthorized(int client, const char[] auth)
+{
+    if (!StrEqual(auth, "BOT"))
+    {
+        g_fTopDamage[client] = 0.0;
+    }
+}
+
 public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float& damage, int &damagetype, int &weapon, float damageForce[3], float damagePosition[3], int damagecustom)
 {
-    if (!GetConVarBool(g_Cvar_Enabled))
-    {
+    if (!g_Cvar_Enabled.BoolValue) {
         return Plugin_Continue;
     }
 
     // remove fall damage
-    if(damagetype & DMG_FALL)
-    {
+    if(damagetype & DMG_FALL) {
         // have kill barriers still kill
         // 450< fall damage in one fall shouldn't usually happen
-        if(damage > 450)
-        {
+        if(damage > 450) {
             return Plugin_Continue;
         }
         return Plugin_Handled;
@@ -99,13 +108,11 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float& dam
     // apply very strict railgun damage
     char wepcls[128];
     GetEntityClassname(weapon, wepcls, sizeof(wepcls));
-    if(StrContains(wepcls, "tf_weapon_shotgun", false) == 0)
-    {
+    if(StrContains(wepcls, "tf_weapon_shotgun", false) == 0) {
         damage = g_Cvar_Rail_Damage.FloatValue;
 
         // measure distance & apply range multiplier
-        if (g_Cvar_Rail_Snipe_Bonus.FloatValue > 0.0)
-        {
+        if (g_Cvar_Rail_Snipe_Bonus.FloatValue > 0.0) {
             float pos_victim[3];
             GetEntPropVector(victim, Prop_Send, "m_vecOrigin", pos_victim);
             float pos_inflictor[3];
@@ -114,37 +121,36 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float& dam
             float distance = GetVectorDistance(pos_victim, pos_inflictor);
             distance = distance - g_Cvar_Rail_Snipe_Floor.FloatValue;
 
-            if (distance > 0)
-            {
+            if (distance > 0) {
                 damage = damage + ( g_Cvar_Rail_Snipe_Bonus.FloatValue * (distance / 100) );
             }
         }
 
         // measure speed & apply speed multiplier
-        if (g_Cvar_Rail_Speed_Bonus.FloatValue > 0.0)
-        {
+        if (g_Cvar_Rail_Speed_Bonus.FloatValue > 0.0) {
             float vel_inflictor[3];
             GetEntPropVector(inflictor, Prop_Data, "m_vecAbsVelocity", vel_inflictor);
 
             float speed;
             speed = SquareRoot( Pow(vel_inflictor[0], 2.0) + Pow(vel_inflictor[1], 2.0) ); // horizontal
-            if (!g_Cvar_Rail_Speed_Horizontal.BoolValue)
-            {
+            if (!g_Cvar_Rail_Speed_Horizontal.BoolValue) {
                 speed = SquareRoot( Pow(speed, 2.0) + Pow(vel_inflictor[2], 2.0) ); // total absolute
             }
 
             speed = speed - g_Cvar_Rail_Speed_Floor.FloatValue;
-            if (speed > 0)
-            {
+            if (speed > 0) {
                 damage = damage + ( g_Cvar_Rail_Speed_Bonus.FloatValue * (speed / 100) );
             }
         }
 
-        // Railgun damage instances >= 200 (instakill) should instagib
-        // this flag is used in player_death to actually gib
+        // Railgun damage instances >= g_Cvar_Rail_GibDamage should instagib
         int damage_type = DMG_BULLET;
-        if (damage >= 200) {
+        if (damage >= g_Cvar_Rail_GibDamage.FloatValue) {
             damage_type += DMG_ALWAYSGIB;
+        }
+
+        if (g_Cvar_Leaderboard.BoolValue) {
+            PerformLeaderboard(attacker, damage);
         }
 
         // deal damage
@@ -163,10 +169,8 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float& dam
     return Plugin_Continue;
 }
 
-public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast)
-{
-    if (!g_Cvar_Enabled.BoolValue)
-    {
+public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast) {
+    if (!g_Cvar_Enabled.BoolValue) {
         return;
     }
 
@@ -198,8 +202,7 @@ public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast)
     }
 }
 
-public Action RemoveBody(Handle timer, any client)
-{
+public Action RemoveBody(Handle timer, any client) {
     int ragdoll = GetEntPropEnt(client, Prop_Send, "m_hRagdoll");
     if(IsValidEdict(ragdoll)) {
         AcceptEntityInput(ragdoll, "kill");
@@ -207,16 +210,13 @@ public Action RemoveBody(Handle timer, any client)
     return Plugin_Continue;
 }
 
-public Action RemoveGibs(Handle timer, any ent)
-{
-    if(IsValidEntity(ent))
-    {
+public Action RemoveGibs(Handle timer, any ent) {
+    if(IsValidEntity(ent)) {
         char classname[64];
 
         GetEdictClassname(ent, classname, sizeof(classname));
 
-        if(StrEqual(classname, "tf_ragdoll", false))
-        {
+        if(StrEqual(classname, "tf_ragdoll", false)) {
             AcceptEntityInput(ent, "kill");
         }
     }
@@ -224,17 +224,14 @@ public Action RemoveGibs(Handle timer, any ent)
     return Plugin_Continue;
 }
 
-public void OnInventoryApplication(Event event, const char[] name, bool dontBroadcast)
-{
-    if (!g_Cvar_Enabled.BoolValue)
-    {
+public void OnInventoryApplication(Event event, const char[] name, bool dontBroadcast) {
+    if (!g_Cvar_Enabled.BoolValue) {
         return;
     }
 
     // Automatically re-enable AIA if it's disabled
     ConVar sm_aia_all = FindConVar("sm_aia_all");
-    if (sm_aia_all)
-    {
+    if (sm_aia_all) {
         SetConVarBool(sm_aia_all, true);
     }
 
@@ -256,15 +253,13 @@ public void OnInventoryApplication(Event event, const char[] name, bool dontBroa
     }
 
     // Make all non-beggars rocket launchers consistent (else DH/AirStrike becomes S+)
-    if (g_Cvar_Launcher_Consistent.BoolValue)
-    {
+    if (g_Cvar_Launcher_Consistent.BoolValue) {
         TF2Attrib_SetByName(pWeapon, "Projectile speed increased", g_Cvar_Launcher_ProjSpeed.FloatValue); // direct hit/liblauncher
         TF2Attrib_SetByName(pWeapon, "rocketjump attackrate bonus", 1.0); // air strike
     }
 
     // Make rocket jumping free
-    if (g_Cvar_Launcher_FreeRJ.BoolValue)
-    {
+    if (g_Cvar_Launcher_FreeRJ.BoolValue) {
         TF2Attrib_SetByName(pWeapon, "rocket jump damage reduction", 0.0);
     }
 
@@ -276,17 +271,15 @@ public void OnInventoryApplication(Event event, const char[] name, bool dontBroa
 
     bool isValidShotgun = false;
     // If they have an item in TFWeaponSlot_Secondary, ensure it's a shotgun
-    if (sWeapon != -1)
-    {
+    if (sWeapon != -1) {
         char wepcls[128];
         GetEntityClassname(sWeapon, wepcls, sizeof(wepcls));
         isValidShotgun = (StrContains(wepcls, "tf_weapon_shotgun", false) == 0);
-    } 
-    else // It's probably Gunboats/Mantreads
-    {
+    } else {
+        // It's probably Gunboats/Mantreads
         int entity = -1;
-        while((entity = FindEntityByClassname(entity, "tf_wearable")) != INVALID_ENT_REFERENCE)
-        {   // Remove Mantreads as it's not intended to be used
+        while((entity = FindEntityByClassname(entity, "tf_wearable")) != INVALID_ENT_REFERENCE) {
+            // Remove Mantreads as it's not intended to be used
             if(GetEntProp(entity, Prop_Send, "m_iItemDefinitionIndex") == 444)
             {
                 AcceptEntityInput(entity, "Kill");
@@ -325,6 +318,32 @@ public void OnInventoryApplication(Event event, const char[] name, bool dontBroa
     TF2Attrib_SetByName(mWeapon, "restore health on kill", 0.0);
 }
 
+void PerformLeaderboard(int client, float damage) {
+    if (damage > g_fTopDamage[client]) {
+        g_fTopDamage[client] = damage;
+    }
+
+    float top = 0.0;
+    int top_c;
+    for (int c; c < MAXPLAYERS+1; c++) {
+        if (g_fTopDamage[c] > top) {
+            top = g_fTopDamage[c];
+            top_c = c;
+        }
+    }
+
+    if (damage >= 200.0 && damage >= top) {
+        char name[32];
+        GetClientName(top_c, name, sizeof(name));
+        MC_PrintToChatAll("{white}%s {crimson}just hit a railshot dealing {hotpink}%.1f{crimson}!!", name, top);
+        for (int i = 0; i <= MAXPLAYERS; i++) {
+            if (IsValidClient(i)) {
+                ClientCommand(i, "playgamesound \"misc/killstreak.wav\"");
+            }
+        }
+    }
+}
+
 void Railgunify(int weapon) {
     // Make railgun
     TF2Attrib_SetByName(weapon, "sniper fires tracer", 1.0);
@@ -332,4 +351,9 @@ void Railgunify(int weapon) {
     TF2Attrib_SetByName(weapon, "weapon spread bonus", 0.0);
     TF2Attrib_SetByName(weapon, "projectile penetration", 1.0);
     TF2Attrib_SetByName(weapon, "fire rate penalty", g_Cvar_Rail_Rateslow.FloatValue);
+}
+
+bool IsValidClient(int client)
+{
+    return ((0 < client <= MaxClients) && IsClientInGame(client) && !IsClientSourceTV(client) && !IsClientReplay(client));
 }
