@@ -34,7 +34,7 @@ public Plugin myinfo = {
     name = "rinstagib",
     author = "raspy",
     description = "rinstagib gamemode.",
-    version = "1.9.0",
+    version = "1.9.1",
     url = "https://jackavery.ca/tf2/#rinstagib"
 };
 
@@ -43,14 +43,14 @@ float g_fTopDamage[MAXPLAYERS + 1];
 public void OnPluginStart() {
     g_Cvar_Enabled = CreateConVar("ri_enabled", "1", "Enable rinstagib mode.", _, true, 0.0, true, 1.0);
     g_Cvar_Leaderboard = CreateConVar("ri_leaderboard", "1", "Enable the rinstagib damage leaderboard and announcements.", _, true, 0.0, true, 1.0);
-    g_Cvar_Launcher_Damage = CreateConVar("ri_launcher_damage", "1.8", "Rocket launcher damage multiplier.", _, true, 0.0, true, 10.0);
+    g_Cvar_Launcher_Damage = CreateConVar("ri_launcher_damage", "5", "Rocket launcher damage multiplier.", _, true, 0.0, true, 10.0);
     g_Cvar_Launcher_Radius = CreateConVar("ri_launcher_radius", "0.1", "Rocket launcher blast radius multiplier.", _, true, 0.0, true, 1.0);
     g_Cvar_Launcher_FreeRJ = CreateConVar("ri_launcher_freerj", "1.0", "Whether Rocket Jumping should cost no health.", _, true, 0.0, true, 1.0);
     g_Cvar_Launcher_Consistent = CreateConVar("ri_launcher_consistent", "1.0", "Whether all rocket launchers (except Beggars) should act the same.", _, true, 0.0, true, 1.0);
     g_Cvar_Launcher_ProjSpeed = CreateConVar("ri_launcher_projspeed", "1.0", "Projectile speed multiplier for all launchers if ri_launcher_consistent is 1.", _, true, 0.0, true, 3.0);
     g_Cvar_Launcher_BazookaDeviation = CreateConVar("ri_launcher_bazooka_nodeviation", "1.0", "Remove projectile deviation from the Beggars Bazooka.", _, true, 0.0, true, 1.0);
     g_Cvar_Rail_Damage = CreateConVar("ri_rail_damage", "80", "Railgun base damage.", _, true, 0.0);
-    g_Cvar_Rail_GibDamage = CreateConVar("ri_rail_gibdamage", "200", "Railgun shots dealing more than this amount will gib the target. Set to 0 to disable.", _, true, 0.0, true, 200.0);
+    g_Cvar_Rail_GibDamage = CreateConVar("ri_rail_gibdamage", "200", "Railgun shots dealing more than this amount will gib the target. Set to 0 to disable.", _, true, 200.0);
     g_Cvar_Rail_Rateslow = CreateConVar("ri_rail_rateslow", "2", "Railgun fire rate slow. 1 = Normal shotgun speed.", _, true, 1.0, true, 10.0);
     g_Cvar_Rail_Snipe_Floor = CreateConVar("ri_rail_snipe_floor", "512", "Range at which railgun damage ramp-up begins.", _, true, 0.0);
     g_Cvar_Rail_Snipe_Bonus = CreateConVar("ri_rail_snipe_bonus", "25", "Amount to add to railgun damage for every 100 distance above ri_rail_snipe_floor.", _);
@@ -143,10 +143,12 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float& dam
             }
         }
 
-        // Railgun damage instances >= g_Cvar_Rail_GibDamage should instagib
+        // Railgun damage instances >= g_Cvar_Rail_GibDamage should gib+sfx
         int damage_type = DMG_BULLET;
         if (damage >= g_Cvar_Rail_GibDamage.FloatValue) {
             damage_type += DMG_ALWAYSGIB;
+            ClientCommand(attacker, "playgamesound TFPlayer.CritPain");
+            ClientCommand(victim, "playgamesound TFPlayer.CritPain");
         }
 
         if (g_Cvar_Leaderboard.BoolValue) {
