@@ -1,6 +1,6 @@
 # 💥 rINSTAGIB ⚡
 
-SourcePawn source code used for **rINSTAGIB** ([trailer video](https://www.youtube.com/watch?v=6GSMJ-zzzig))
+SourcePawn source code used for **rINSTAGIB** ([frag compilation](https://www.youtube.com/watch?v=_DH_TAh-4yY)) ([old trailer video](https://www.youtube.com/watch?v=6GSMJ-zzzig))
 
 ### Please note that `rinstagib.sp` only handles fall damage and weapons. Having the rInstagib gamemode requires additional plugins.
 
